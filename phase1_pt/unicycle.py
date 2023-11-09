@@ -3,7 +3,7 @@ from copy import deepcopy
 import numpy as np
 
 class Unicycle:
-    def __init__(self, dt=0.1, x0=np.zeros(3)):
+    def __init__(self, dt=0.25, x0=np.zeros(3)):
         self.dt = dt
         # poses in global frame
         x0 = np.reshape(x0, (3,1))
@@ -21,6 +21,8 @@ class Unicycle:
         self.x[0,0] += delta_x
         self.x[1,0] += delta_y
         self.x[2,0] += delta_theta
+        # make sure theta is in [-pi, pi]
+        self.x[2,0] = np.mod(self.x[2,0] + np.pi, 2*np.pi) - np.pi
         self.history = np.concatenate((self.history, self.x), axis=1)
 
 
