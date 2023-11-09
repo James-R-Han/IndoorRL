@@ -8,6 +8,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import scipy
 from tqdm import tqdm
+import yaml
 
 class PathTrackingEnvironment:
     """
@@ -53,7 +54,7 @@ class PathTrackingEnvironment:
                 # PathTrackingEnvironment.plot_localization(path, poses_on_path[:,0], pose, closest_indices[0], closest_indices[1], interp_pose, interp_index)
 
                 state_gen_input = {'path': path, 'pose': pose, 'interp_pose': interp_pose, 'interp_index': interp_index}
-                state = PathTrackingEnvironment.state_gen(state_gen_input, self.model_name)
+                state = PathTrackingEnvironment.state_gen(state_gen_input, self.model_name, self.model_kwargs)
                 PathTrackingEnvironment.plot_CNN_input(path, poses_on_path[:,0], pose, closest_indices[0], closest_indices[1], interp_pose, interp_index, state)
 
                 # action = self.action_gen(state)
@@ -305,12 +306,16 @@ if __name__ == '__main__':
     # Seed
     np.random.seed(1)
 
-    # plotting needs
-    cm = matplotlib.colormaps['magma']
+    # load params from yaml
+    with open('phase1_pt/data_gen_config.yaml') as file:
+        params = yaml.load(file, Loader=yaml.FullLoader)
 
-    robot = Unicycle(dt=0.25)
-    controller = Controller('vtr_gen_policy', dt=robot.dt)
-    env = PathTrackingEnvironment(1000,200,50,robot,controller, 'none', 'none', 'DRL_CNN')
+
+    robot = Unicycle(dt=params['robot']['dt'])
+    controller = Controller(params['controller_policy'], dt=robot.dt)
+    data_params = params['data']
+    model_name = params['model']
+    env = PathTrackingEnvironment(data_params['num_paths'],data_params['len_path'],data_params['num_samples_per_path'], robot,controller, 'none', 'none', model_name, params[model_name])
     env.generate_data()
 
 

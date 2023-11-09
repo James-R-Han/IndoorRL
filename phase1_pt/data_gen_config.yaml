@@ -1,0 +1,19 @@
+
+model: DRL_CNN
+controller_policy: vtr_gen_policy
+robot:
+  dt: 0.25
+
+data:
+  num_paths: 1000
+  len_path: 200
+  num_samples_per_path: 50
+
+DRL_CNN:
+  lookahead: 5
+  grid_res: 0.1
+  x_dim: 51
+  y_dim: 51
+
+DRL_MLP:
+  lookahead: 5
